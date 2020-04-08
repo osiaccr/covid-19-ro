@@ -5,7 +5,7 @@ import {
   Paper,
   Typography,
   Card,
-  CardContent
+  CardContent,
 } from "@material-ui/core";
 import {
   ResponsiveContainer,
@@ -14,7 +14,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Line
+  Line,
 } from "recharts";
 
 import "../css/home.css";
@@ -223,15 +223,45 @@ export default class Home extends Component {
       );
     };
 
+    const GraphChangeRate = () => {
+      return (
+        <Grid item style={{ width: "95%", paddingRight: 0, paddingLeft: 0 }}>
+          <Typography align="center" color="textPrimary" variant="h4">
+            Rata de creștere ca raport a cazurilor totale
+          </Typography>
+          <Typography align="center" color="textSecondary" variant="h5">
+            In perioada: {this.props.firstUpdate} - {this.props.lastUpdate}
+          </Typography>
+          <ResponsiveContainer width={"95%"} height={420}>
+            <LineChart
+              width={800}
+              height={420}
+              data={this.props.dataChangeRate}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip contentStyle={{ background: "#303030" }} />
+              <Line
+                type="monotone"
+                dataKey="change"
+                stroke="white"
+                name="Creștere"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Grid>
+      );
+    };
+
     const Footer = () => {
       return (
         <Paper
           style={{
             width: "100%",
-            height: 40,
             paddingTop: 10,
             paddingRight: 10,
-            paddingLeft: 10
+            paddingLeft: 10,
           }}
         >
           <Grid container xs={12}>
@@ -318,6 +348,8 @@ export default class Home extends Component {
           {GraphRecoveredDeaths()}
 
           {GraphChange()}
+
+          {GraphChangeRate()}
         </Grid>
 
         {Footer()}

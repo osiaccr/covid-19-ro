@@ -17,25 +17,25 @@ export default class HomeProvider extends Component {
       totalRecovered: 0,
       totalClosed: 0,
       percentageDead: 0,
-      percentageRecovered: 0
+      percentageRecovered: 0,
     };
   }
 
   async componentDidMount() {
-    const parseDate = date => {
+    const parseDate = (date) => {
       const dateElements = date.substring(0, 10).split("-");
       return `${dateElements[2]}.${dateElements[1]}`;
     };
 
     const confirmed = await axios
       .get("https://api.covid19api.com/total/country/romania/status/confirmed")
-      .then(res => res.data);
+      .then((res) => res.data);
     const recovered = await axios
       .get("https://api.covid19api.com/total/country/romania/status/recovered")
-      .then(res => res.data);
+      .then((res) => res.data);
     const deaths = await axios
       .get("https://api.covid19api.com/total/country/romania/status/deaths")
-      .then(res => res.data);
+      .then((res) => res.data);
 
     let data = [];
     for (let index = 0; index < confirmed.length; index++) {
@@ -44,7 +44,7 @@ export default class HomeProvider extends Component {
           confirmed: confirmed[index].Cases,
           recovered: recovered[index].Cases,
           deaths: deaths[index].Cases,
-          date: parseDate(confirmed[index].Date)
+          date: parseDate(confirmed[index].Date),
         });
       } catch (e) {
         continue;
@@ -52,10 +52,22 @@ export default class HomeProvider extends Component {
     }
 
     let dataChange = [];
+    let dataChangeRate = [];
     for (let index = 1; index < confirmed.length; index++) {
+      let change = confirmed[index].Cases - confirmed[index - 1].Cases;
+      let changeRate =
+        confirmed[index - 1].Cases === 0
+          ? 0
+          : (change / confirmed[index - 1].Cases).toFixed(3);
+
       dataChange.push({
-        change: confirmed[index].Cases - confirmed[index - 1].Cases,
-        date: parseDate(confirmed[index].Date)
+        change: change,
+        date: parseDate(confirmed[index].Date),
+      });
+
+      dataChangeRate.push({
+        change: changeRate,
+        date: parseDate(confirmed[index].Date),
       });
     }
 
@@ -73,6 +85,7 @@ export default class HomeProvider extends Component {
     this.setState({
       data,
       dataChange,
+      dataChangeRate,
       lastUpdate,
       firstUpdate,
       totalCases,
@@ -80,7 +93,7 @@ export default class HomeProvider extends Component {
       totalRecovered,
       totalClosed,
       percentageDead,
-      percentageRecovered
+      percentageRecovered,
     });
   }
 
